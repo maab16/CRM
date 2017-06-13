@@ -1,0 +1,202 @@
+html,body{
+	height:100%;
+}
+.dashboard_header{
+	width: 100% !important;
+	height: 60px;
+	background-image: linear-gradient(to bottom, #3C3C3C 0px, #222 100%);
+	background-repeat: repeat-x;
+}
+
+.dashboard_header .main_site >a{
+
+	line-height: 45px;
+}
+
+.header_fixed{
+	position: fixed;
+	z-index: 9999;
+	top: 0px;
+	left: 0px;
+}
+
+.short_name{
+
+	color:#fff;
+	line-height: 60px;
+	width: 60px;
+	height: 60px;
+	margin-bottom: 0px;
+	background-color: green;
+	text-align: center;
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+  	-moz-border-radius: 50%;
+  	-o-border-radius: 50%;
+}
+
+#settings{
+
+	max-width: 300px;
+	height: 45px;
+	right: 10px;
+	float: right;
+}
+
+#settings>img{
+
+	max-width: 50px;
+	height: 45px;
+	float: left;
+	border-radius: 50%;
+}
+
+ul.parent,ul.child{
+
+	list-style-type: none;
+}
+ul.parent li a,ul.child li a{
+
+	text-decoration: none;
+}
+
+.child_div{
+
+	display: none;
+}
+ul.parent li{
+
+	height: 60px;
+}
+
+ul.parent li a{
+	display: block;
+	height: 60px;
+	line-height: 60px;
+}
+ul.parent li:hover .child_div{display: block;}
+ul.child{
+
+	background-color: #265a88;
+	padding: 0px !important;
+	top: 60px;
+}
+ul.child li{
+
+	width: 100%;
+	height: 40px;
+	
+	border-bottom: 1px solid #5C5C5C;
+}
+
+ul.child li:last{
+
+	border-bottom: unset;
+}
+
+ul.child li a{
+	display: block;
+	height: 40px;
+	padding: 10px;
+	line-height: 20px;
+	color: #ACACAC;
+	font-size: 16px;
+}
+
+ul.child li a:hover{
+
+	background-color: orange;
+	color: #fff;
+}
+
+
+.menu{
+	height: 100%;
+	color: white;
+	background-image: linear-gradient(to bottom, #3C3C3C 0px, #222 100%);
+	background-repeat: repeat-x;
+}
+.menu_fixed{
+	position: fixed;
+	left: 0px;
+	width: 16vw;
+	top: 44px;
+}
+.main_content{
+	top: 44px;
+	height: 100%;
+	padding: 0px !important;
+	margin: 0px !important;
+}
+
+.content{
+
+	margin-top: 20px;
+	position: absolute;
+	margin-bottom:50px;
+}
+
+.widget{
+
+	height: 100%;
+	max-height: 100% !important;
+	color: white;
+	/*background-image: linear-gradient(to bottom, #3C3C3C 0px, #222 100%);
+	background-repeat: repeat-x;*/
+}
+
+.footer{
+	
+	width: 100% !important;
+	height: 45px;
+	color: white;
+	background-image: linear-gradient(to bottom, #3C3C3C 0px, #222 100%);
+	background-repeat: repeat-x;
+
+}
+.footer_fixed{
+	position: fixed;
+	left: 0px;
+	bottom: 0;
+	z-index: 9999;
+}
+.footer p{
+
+	text-align: center;
+	line-height: 40px;
+}
+
+.select-box{
+	background-color: #E6E6E6;
+}
+
+.navarrow{
+	position: absolute;
+	right: 10px;
+}
+
+.all_brands{
+
+	width: 100%;
+	height: 100%;
+}
+
+.all_brands th,td{
+
+	text-align: center;
+	width: 300px;
+	height: 30px;
+}
+
+.all_slider th{
+
+	height: 40px;
+	text-align: center;
+}
+.all_slider td img{
+
+	width:150px;
+	height: 150px;
+
+	
+}

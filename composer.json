@@ -1,0 +1,13 @@
+{
+    "autoload":{
+    	"psr-4": {
+            "App\\": "App/",
+    		"Blab\\": "Blab/"
+    	}
+    },
+    "require": {
+        "twig/twig": "^1.33",
+        "symfony/process": "^3.2",
+        "symfony/http-foundation": "^3.2"
+    }
+}
