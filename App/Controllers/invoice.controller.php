@@ -93,6 +93,20 @@ class InvoiceController extends Blab_Controller
 
 		if (!empty($params[0])) {
 			
+			$this->model->deleteUserProduct($params[0],$user->id);
+		}
+	}
+
+	public function delete_cart(){
+		if(!(new \Blab\Libs\Blab_User())->isLoggedIn()){
+			Redirect::to('/users/login/');
+		}else{
+			$user = (new \Blab\Libs\Blab_User())->data();
+		}
+		$params = Bootstrap::getRouter()->getParams();
+
+		if (!empty($params[0])) {
+			
 			$this->model->deleteCart($params[0],$user->id);
 		}
 	}

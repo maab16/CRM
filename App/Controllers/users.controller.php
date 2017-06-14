@@ -32,7 +32,7 @@ class UsersController extends Controllers\Blab_Controller
 
 		$page = !empty($params[0]) ? $params[0] : 1;
 
-		$limit = 2;
+		$limit = 5;
 		/*Get All Product*/
 		$this->data['all_user'] = $this->model->getAllUser($limit,$page);
 
@@ -57,7 +57,7 @@ class UsersController extends Controllers\Blab_Controller
 		}
 	}
 
-	public function new(){
+	public function new_users(){
 
 		if((new Blab_User())->isLoggedIn()){
 			if(!(new Permission())->hasPermission('admin')){
@@ -69,7 +69,7 @@ class UsersController extends Controllers\Blab_Controller
 
 		$page = !empty($params[0]) ? $params[0] : 1;
 
-		$limit = 2;
+		$limit = 5;
 		/*Get All Product*/
 		$this->data['new_users'] = $this->model->getNewUsers($limit,$page);
 
@@ -81,7 +81,7 @@ class UsersController extends Controllers\Blab_Controller
 
 		// Page Link
 
-		$page_link  = '/users/new/';
+		$page_link  = '/users/new_users/';
 
 		// pagination($opt1=table_name,$opt2=total_items,$opt3=page_link,$opt4=display_items,$opt5=where condition)
 		if ($this->data['total']>0) {
@@ -172,7 +172,7 @@ class UsersController extends Controllers\Blab_Controller
 
 		if (isset($_POST['signup'])) {
 			
-			$this->data['signup_error'] = $this->model->setUser($_POST);
+			$this->data['signup_error'] = $this->model->createUser($_POST);
 		}
 	}
 

@@ -104,3 +104,15 @@ $customerProductsSql = "CREATE TABLE user_products(
 			CONSTRAINT FK_CUSTOMER_ID FOREIGN KEY(user_id) REFERENCES users(id),
 			CONSTRAINT FK_PRODUCT_ID FOREIGN KEY(product_id) REFERENCES products(id)
 		)";
+
+$customerCart = "CREATE TABLE carts(
+			id int not null AUTO_INCREMENT PRIMARY KEY,
+			user_id int not null,
+			product_id int not null,
+			qty int not null,
+			created_at datetime not null,
+			updated_at datetime not null,
+			CONSTRAINT UC_Customer_Product UNIQUE(user_id,product_id),
+			CONSTRAINT FK_CART_CUSTOMER_ID FOREIGN KEY(user_id) REFERENCES users(id),
+			CONSTRAINT FK_CART_PRODUCT_ID FOREIGN KEY(product_id) REFERENCES products(id)
+		)";

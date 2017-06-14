@@ -229,7 +229,7 @@ class Blab_User extends Blab_Model
 
 	public function carts(){
 		$results = $this->_db->query()
-					->from('user_products')
+					->from('carts')
 					->where(array('user_id'=>$this->_data->id))
 					->results();
 		$this->_cartItems = $results ? count($results) : 0;
@@ -253,7 +253,7 @@ class Blab_User extends Blab_Model
 		return $this->_cartItems;
 	}
 
-	public function getSingleCart($id,$tableName='user_products',$field='product_id'){
+	public function getSingleCart($id,$tableName='carts',$field='product_id'){
 
 		if (!isset($id)) {
 			throw new \Exception("id must be needed", 1);

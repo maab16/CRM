@@ -42,9 +42,9 @@ class Invoice extends Blab_Model
 
 	public function getSingleCart($id,$user_id){
 		return $this->_db->query()
-				->from('user_products',[
-					'user_products.user_id'=>'user',
-					'user_products.qty'=>'qty',
+				->from('carts',[
+					'carts.user_id'=>'user',
+					'carts.qty'=>'qty',
 					'products.id'=>'id',
 					'products.code'=>'code',
 					'products.product_image'=>'product_image',
@@ -54,12 +54,25 @@ class Invoice extends Blab_Model
 				])
 				->where(array('product_id'=>$id))
 				->where(array('user_id'=>$user_id))
-				->join('INNER','products','user_products.product_id=products.id')
+				->join('INNER','products','carts.product_id=products.id')
 				->join('INNER','companies','products.company=companies.id')
 				->results();
 	}
 
 	public function deleteCart($id,$user_id){
+
+		$deleteCart = $this->_db->query()
+					->from('carts')
+					->where(array('product_id'=>$id),'=')
+					->where(array('user_id'=>$user_id))
+					->delete();
+
+		if ($deleteCart) {
+			Redirect::to('/products/carts/');
+		}
+	}
+
+	public function deleteUserProduct($id,$user_id){
 
 		$deleteCart = $this->_db->query()
 					->from('user_products')
@@ -68,7 +81,7 @@ class Invoice extends Blab_Model
 					->delete();
 
 		if ($deleteCart) {
-			Redirect::to('/dashboard/');
+			Redirect::to('/');
 		}
 	}
 }

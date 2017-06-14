@@ -62,7 +62,7 @@ class ProductsController extends Controllers\Blab_Controller
 	public function all(){
 
 		if((new Blab_User())->isLoggedIn()){
-			if(!(new Permission())->hasPermission('admin')){
+			if(!(new Permission())->hasPermission('admin') && !(new \Blab\Libs\Permission())->hasPermission('moderator')){
 				Redirect::to('/');
 			}
 		}else{
@@ -79,7 +79,7 @@ class ProductsController extends Controllers\Blab_Controller
 		/*Get All Product*/
 		$this->data['products'] = $this->model->getAllProduct($limit,$page);
 
-		$this->data['total_products'] = $this->model->count();
+		$this->data['total_products'] = $this->model->count('products');
 
 		/*
 		 *This Section Are used for Pagination
@@ -100,9 +100,28 @@ class ProductsController extends Controllers\Blab_Controller
 		}
 	}
 
+	public function view(){
+		if(!(new Blab_User())->isLoggedIn()){
+			Redirect::to('/users/login/');
+		}
+		/*Get All Company List*/
+		$this->data['companies'] = $this->model->getAllCompany();
+		/*Get All Available List*/
+		$this->data['availabilities'] = $this->model->getAvailabilities();
+		/*Get Single Product*/
+		$params = Bootstrap::getRouter()->getParams();
+		if (!empty($params[0])) {
+			$this->data['product'] = $this->model->getSingleProductInfo($params[0]);
+		}
+		
+		if (Input::exists()) {
+			$this->data['product_errors'] = $this->model->updateProduct($_POST);
+		}
+	}
+
 	public function create(){
 		if((new Blab_User())->isLoggedIn()){
-			if(!(new Permission())->hasPermission('admin')){
+			if(!(new Permission())->hasPermission('admin') && !(new \Blab\Libs\Permission())->hasPermission('moderator')){
 				Redirect::to('/products/');
 			}
 		}
@@ -117,7 +136,7 @@ class ProductsController extends Controllers\Blab_Controller
 
 	public function update(){
 		if((new Blab_User())->isLoggedIn()){
-			if(!(new Permission())->hasPermission('admin')){
+			if(!(new Permission())->hasPermission('admin') && !(new \Blab\Libs\Permission())->hasPermission('moderator')){
 				Redirect::to('/products/');
 			}
 		}
@@ -138,7 +157,7 @@ class ProductsController extends Controllers\Blab_Controller
 
 	public function delete(){
 		if((new Blab_User())->isLoggedIn()){
-			if(!(new Permission())->hasPermission('admin')){
+			if(!(new Permission())->hasPermission('admin') && !(new \Blab\Libs\Permission())->hasPermission('moderator')){
 				Redirect::to('/products/');
 			}
 		}
@@ -160,12 +179,12 @@ class ProductsController extends Controllers\Blab_Controller
 
 		/* Get Number of Users*/
 		$this->data['total_users'] = $this->model->count('users');
-		/* Get Number of Users*/
+		/* Get Number of Products*/
 		$this->data['total_products'] = $this->model->count('products');
-		/* Get Number of Users*/
+		/* Get Number of Companies*/
 		$this->data['total_companies'] = $this->model->count('companies');
-		/* Get Number of Users*/
-		$this->data['total_carts'] = $this->model->count('user_products');
+		/* Get Number of Carts*/
+		$this->data['total_carts'] = $this->model->count('carts');
 
 		$params = Bootstrap::getRouter()->getParams();
 
@@ -173,9 +192,9 @@ class ProductsController extends Controllers\Blab_Controller
 
 		$limit = 3;
 
-		$this->data["cart"] = $this->model->getProductByUser($user->id,$limit,$page);
+		$this->data["cart"] = $this->model->getCartProductByUser($user->id,$limit,$page);
 
-		$this->data['total'] = $this->model->count('user_products',array('user_products.user_id'=>$user->id));
+		$this->data['total'] = $this->model->count('carts',array('carts.user_id'=>$user->id));
 
 		/*
 		 *This Section Are used for Pagination
@@ -193,6 +212,13 @@ class ProductsController extends Controllers\Blab_Controller
 			$this->data['pagination_controll'] = $pgn->getPaginationLists();
 
 			$this->data['pagination'] = $pgn->getPaginationData();
+		}
+
+		if (Input::exists()) {
+			$cart_products = $this->model->getCurrentUserAllCart($user->id);
+
+			$this->model->insertUserProducts($cart_products);
+			$this->model->deleteCurrentUserCart($user->id);
 		}
 
 	}

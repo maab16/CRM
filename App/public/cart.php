@@ -16,7 +16,7 @@ if (isset($_GET['product_id']) && isset($_GET['user_id']) && isset($_GET['qty'])
 	$db = Blab\Mvc\Models\Blab_Model::getDBInstance();
 
 	$results = $db->query()
-				->into('user_products')
+				->into('carts')
 				->insert(array(
 					'user_id'=>$user_id,
 					'product_id'=>$product_id,

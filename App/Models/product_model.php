@@ -97,7 +97,7 @@ class Product extends Blab_Model
 	public function getCartList($user_id){
 
 		return $this->_db->query()
-				->from('user_products',['product_id'])
+				->from('carts',['product_id'])
 				->where(array('user_id'=>$user_id))
 				->results();
 	}
@@ -109,24 +109,65 @@ class Product extends Blab_Model
 				->firstResult();
 	}
 
-	public function getProductByUser($user_id,$limit,$page){
+	public function getSingleProductInfo($id){
 		return $this->_db->query()
-				->from('user_products',[
+				->from('products',[
+					'products.title'=>'title',
+					'products.code'=>'code',
+					'products.price'=>'price',
+					'products.currency'=>'currency',
+					'products.product_image'=>'product_image',
+					'companies.company_name'=>'company',
+					'companies.vat_no'=>'vat_no',
+					'companies.reg_no'=>'reg_no',
+					'availabilities.title'=>'availability'
+				])
+				->where(array('products.id'=>$id))
+				->join('INNER','companies','products.company = companies.id')
+				->join('INNER','availabilities','products.status = availabilities.code')
+				->firstResult();
+	}
+
+	public function getCartProductByUser($user_id,$limit,$page){
+		return $this->_db->query()
+				->from('carts',[
 					'products.id'=>'product_id',
 					'products.code'=>'product_code',
 					'products.product_image'=>'product_image',
 					'products.price'=>'price',
 					'products.currency'=>'currency',
 					'companies.company_name'=>'company_name',
-					'user_products.qty'=>'qty',
-					'user_products.created_at'=>'issued_date',
+					'carts.qty'=>'qty',
+					'carts.created_at'=>'issued_date',
 				])
-				->where(array('user_id'=>$user_id))
-				->join('INNER','products','user_products.product_id=products.id')
+				->where(array('carts.user_id'=>$user_id))
+				->join('INNER','products','carts.product_id=products.id')
 				->join('INNER','companies','products.company=companies.id')
 				->limit($limit,$page)
-                ->order(array('user_products.updated_at'=>'DESC'))
+                ->order(array('carts.updated_at'=>'DESC'))
 				->results();
+	}
+
+	public function getCurrentUserAllCart($user_id){
+		return $this->_db->query()
+				->from('carts')
+				->where(array('user_id'=>$user_id))
+				->results();
+	}
+
+	public function insertUserProducts($carts){
+		foreach ($carts as $cart) {
+			
+			$this->_db->query()
+				->into('user_products')
+				->insert(array(
+					'user_id'=>$cart->user_id,
+					'product_id'=>$cart->product_id,
+					'qty'=>$cart->qty,
+					'created_at'=>date('Y-m-d'),
+					'updated_at'=>date('Y-m-d'),
+				));
+		}
 	}
 
 	public function updateProduct($source){
@@ -195,6 +236,18 @@ class Product extends Blab_Model
 			Redirect::to('/products/');
 		}
 
+	}
+
+	public function deleteCurrentUserCart($user_id){
+		$deleteCarts = $this->_db->query()
+					->from('carts')
+					->where(array('user_id'=>$user_id))
+					->delete();
+		if ($deleteCarts) {
+			
+			echo "<script>alert('Cart Process Successfully.')</script>";
+			Redirect::to('/');
+		}
 	}
 
 	public function count($tableName,$where=array()){

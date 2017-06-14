@@ -97,9 +97,9 @@ input:hover{
 	top: 0px;
 	left: 250px;
 	width: calc(100% - 250px);
-	height: 350px;
+	/*height: 350px;*/
 	/*padding-left: 0px;*/
-	
+	margin-bottom: 50px;
 	-webkit-transition : all 0.3s;
 	transition : all 0.3s;
 }
@@ -108,7 +108,7 @@ input:hover{
 	left: 0px;
 }
 .content{
-	padding: 0px 15px;
+	padding: 0px 15px 30px;
 }
 /*Sidebar*/
 .panel,

@@ -306,6 +306,75 @@ class User extends Blab_User
 		}
 	}
 
+	public function createUser($source){
+
+		$input = new Input();
+								
+		$validation = $input->check($source,array(
+			'username'=>array(
+					'required'=>true,
+					'min'=>5,
+					'max'=>255,
+					'unique'=>'users'
+					),
+			'email'=>array(
+					'required'=>true,
+					'min'=>15,
+					'email'=>'username',
+					'unique'=>'users'
+					),
+			'password'=>array(
+
+					'required'=>true,
+					'min'=>8,
+					'preg_match'=>'password'
+					),
+			're_password'=>array(
+
+					'required'=>true,
+					'matches'=>'password'
+					),							
+		));
+		if ($validation->passed()) {
+
+			$salt = hash::salt(32);
+
+			try{
+
+				$result = $this->create(array(
+
+										"username"=>Input::get('username'),
+										"password"=>Hash::make(Input::get('password')),
+										"salt"=>'',
+										"email"=>Input::get('email'),
+										"active"=>1,
+										"created_at"=>date("Y-m-d"),
+										"updated_at"=>date("Y-m-d"),
+										));
+				$user = $this->_db->query()
+						->from("users")
+						->where(array('username'=>Input::get('username')),'=')
+						->firstResult();
+
+				$profile = $this->_db->query()
+							->into("profiles")
+							->insert(array('user_id'=> $user->id));
+
+				Session::setFlash('Your registration Successfully.');
+				Redirect::to('/users/');
+										
+			} catch (Exception $e) {
+
+				die($e->getMessage());
+										
+			}
+
+		}else{
+
+			return $validation->errors();
+		}
+	}
+
 	public function logInUser($source){
 
 		

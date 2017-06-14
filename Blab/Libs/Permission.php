@@ -37,9 +37,16 @@ class Permission extends BLAB_Model
 							$permissions = json_decode($group->permission,true);
 							// Check given permission is exists
 
-							if ($permissions[$permission]==true) {
+							// var_dump($permissions[0] !== $permission);
+							// die();
+
+							if (array_key_exists($permission,$permissions)) {
+
+								if ($permissions[$permission]==true) {
 								
-								return true;
+									return true;
+								}
+								
 							}
 						}
 					}

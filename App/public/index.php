@@ -2,7 +2,7 @@
 session_start();
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', $_SERVER['DOCUMENT_ROOT']);
-define("VIEWS_PATH", ROOT.DS."App".DS."views");
+define("VIEWS_PATH", ROOT.DS."App".DS."Views");
 
 require_once ROOT.DS.'vendor'.DS.'autoload.php';
 

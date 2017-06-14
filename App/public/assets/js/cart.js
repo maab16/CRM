@@ -52,7 +52,7 @@ function updateCart(product_id,user_id,qty){
 			if (data.exists !== undefined) {
 
 				alert('Cart Updated Successfully.');
-				window.open('/dashboard/' , '_self');
+				window.open('/products/carts/' , '_self');
 			}
 			
 		},
