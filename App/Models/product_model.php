@@ -78,12 +78,12 @@ class Product extends Blab_Model
 	public function getAllProduct($limit,$page){
 		return $this->_db->query()
 				->from('products',[
-					'products.id'=>'id',
-					'products.code'=>'code',
-					'products.title'=>'title',
-					'products.price'=>'price',
-					'products.currency'=>'currency',
-					'products.product_image'=>'product_image',
+					'products.id',
+					'products.code',
+					'products.title',
+					'products.price',
+					'products.currency',
+					'products.product_image',
 					'companies.company_name'=>'company',
 					'availabilities.title' => 'status'
 				])

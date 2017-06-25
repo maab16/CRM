@@ -249,7 +249,6 @@ class Mysql extends Database\Connector
 				
 				$x=1;
 				if (!empty($params)) {
-					//print_r($params);
 					foreach ($params as $param) {
 					
 						$this->_query->bindValue($x,$param);

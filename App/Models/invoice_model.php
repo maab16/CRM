@@ -28,6 +28,7 @@ class Invoice extends Blab_Model
 					->join('INNER','products','user_products.product_id=products.id')
 					->join('INNER','companies','products.company=companies.id')
 					->firstResult();
+
 		$profiles = $this->_db->query()
 					->from('profiles',[
 						'profiles.fname'=>'first_name',
@@ -37,7 +38,10 @@ class Invoice extends Blab_Model
 					->where(array('user_id'=>$user_id))
 					->firstResult();
 
-		return (object)array_merge((array)$results,(array)$profiles);
+		return (object)array_merge(
+							(array)$results,
+							(array)$profiles
+						);
 	}
 
 	public function getSingleCart($id,$user_id){

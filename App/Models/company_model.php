@@ -60,7 +60,7 @@ class Company extends Blab_Model
 
 			try{
 
-				$updateCompany = $this->_db->query()
+				$insertCompany = $this->_db->query()
 						->into("companies")
 						->insert([
 								'company_name'=>input::get('company_name'),
@@ -75,7 +75,7 @@ class Company extends Blab_Model
 								'updated_at'=>date("Y-m-d"),
 							]
 						);
-				if ($updateCompany) {
+				if ($insertCompany) {
 					Session::setFlash('Company Created Successfully.');
 					Redirect::to("/companies/");
 										
@@ -175,7 +175,7 @@ class Company extends Blab_Model
 					->where(array('id'=>$id),'=')
 					->delete();
 
-		if ($existsCompany && $deleteCompany) {
+		if ($deleteCompany) {
 			
 			echo "<script>alert('Company Deleted Successfully.')</script>";
 			Redirect::to('/companies/');
