@@ -7,10 +7,6 @@ use Blab\Libs\Redirect;
 use Blab\Libs\Registry;
 use Blab\Libs\Blab_User;
 
-/*
- *	Controll All Default
- */
-
 class Bootstrap
 {
 

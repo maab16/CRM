@@ -7,7 +7,6 @@ use Blab\Libs\Input;
 use Blab\Libs\Session;
 use Blab\Libs\Registry;
 use Blab\Libs\Redirect;
-use Blab\Mvc\Bootstrap;
 use Blab\Libs\Pagination;
 use Blab\Libs\Blab_User;
 use Blab\Libs\Permission;
@@ -15,7 +14,6 @@ use Blab\Libs\Permission;
 class UsersController extends Controllers\Blab_Controller
 {
 	public function __construct($data = array()){
-
 		parent::__construct($data);
 		$this->model = new \App\Models\User();
 	}
@@ -28,9 +26,7 @@ class UsersController extends Controllers\Blab_Controller
 			}
 		}
 
-		$params = Bootstrap::getRouter()->getParams();
-
-		$page = !empty($params[0]) ? $params[0] : 1;
+		$page = !empty($this->params[0]) ? $this->params[0] : 1;
 
 		$limit = 5;
 		/*Get All Product*/
@@ -65,9 +61,7 @@ class UsersController extends Controllers\Blab_Controller
 			}
 		}
 
-		$params = Bootstrap::getRouter()->getParams();
-
-		$page = !empty($params[0]) ? $params[0] : 1;
+		$page = !empty($this->params[0]) ? $this->params[0] : 1;
 
 		$limit = 5;
 		/*Get All Product*/
@@ -99,9 +93,9 @@ class UsersController extends Controllers\Blab_Controller
 			Redirect::to('/users/login/');
 		}
 		/*Get Single User Data for Update Page*/
-		$params = Bootstrap::getRouter()->getParams();
-		if (!empty($params[0])) {
-			$this->data['single_user'] = $this->model->getUserInfo($params[0],'users');
+
+		if (!empty($this->params[0])) {
+			$this->data['single_user'] = $this->model->getUserInfo($this->params[0],'users');
 		}
 	}
 
@@ -111,9 +105,9 @@ class UsersController extends Controllers\Blab_Controller
 			Redirect::to('/users/login/');
 		}
 		/*Get Single User Data for Update Page*/
-		$params = Bootstrap::getRouter()->getParams();
-		if (!empty($params[0])) {
-			$this->data['single_user'] = $this->model->getUserInfo($params[0],'users');
+
+		if (!empty($this->params[0])) {
+			$this->data['single_user'] = $this->model->getUserInfo($this->params[0],'users');
 		}
 		/*Update User Data*/
 		if (Input::exists()) {	
@@ -141,9 +135,8 @@ class UsersController extends Controllers\Blab_Controller
 		$this->data['status'] = $this->model->getAllStatus();
 
 		/*Get User Permission*/
-		$params = Bootstrap::getRouter()->getParams();
-		$this->data['user_permission'] = $this->model->getUserPermission($params[0]);
-		$this->data['user_status'] = $this->model->getUserStatus($params[0]);
+		$this->data['user_permission'] = $this->model->getUserPermission($this->params[0]);
+		$this->data['user_status'] = $this->model->getUserStatus($this->params[0]);
 		if (Input::exists()) {
 			$this->model->setPermission();
 			$this->model->setUserStatus();
@@ -157,9 +150,8 @@ class UsersController extends Controllers\Blab_Controller
 			}
 		}
 
-		$params = Bootstrap::getRouter()->getParams();
-		if (!empty($params[0])) {
-			$this->model->approveUser($params[0]);
+		if (!empty($this->params[0])) {
+			$this->model->approveUser($this->params[0]);
 		}
 	}
 
@@ -213,9 +205,8 @@ class UsersController extends Controllers\Blab_Controller
 			}
 		}
 
-		$params = Bootstrap::getRouter()->getParams();
-		if (!empty($params[0])) {
-			$this->model->deleteUser($params[0]);
+		if (!empty($this->params[0])) {
+			$this->model->deleteUser($this->params[0]);
 		}
 		
 	}

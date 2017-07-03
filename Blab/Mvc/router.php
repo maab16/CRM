@@ -94,7 +94,7 @@ class Router extends Router\Route implements Router\RouterInterface
 	/**
 	 * Set New Route
 	 * @param 
-	 * @return Current Object
+	 * @return Object
 	 */
 
 	public function addRoute($route){
@@ -106,20 +106,18 @@ class Router extends Router\Route implements Router\RouterInterface
 	/**
 	 * Remove Specific Route
 	 * @param 
-	 * @return 
+	 * @return object
 	 */
 
 	public function removeRoute($route){
 
-		/*
 
-		if (array_key_exists($route, $this->_routes)) {
+		if (array_key_exists($key = array_search($route,$this->_routes), $this->_routes)) 
+		{
 				
-			unset($this->_routes[$route]);
+			unset($this->_routes[$key]);
 		}
-
-		*/
-
+	/*
 		foreach ($this->_routes as $key => $value) {
 			
 			if ($value == $route) {
@@ -128,14 +126,16 @@ class Router extends Router\Route implements Router\RouterInterface
 			}
 			
 		}
+	*/
 
 		return $this;
 	}
 
 	/**
 	 * Get All Available Routes
-	 * @param 
-	 * @return 
+	 *
+	 * @param no parameter
+	 * @return array
 	 */
 
 	public function getRoutes(){
@@ -149,6 +149,13 @@ class Router extends Router\Route implements Router\RouterInterface
 		}
 		return $list;
 	}
+
+	/**
+	 * Dispatch The Request Url
+	 *
+	 * @param no parameter
+	 * @return void
+	 */
 
 	public function dispatch(){
 		//echo $this->_url;

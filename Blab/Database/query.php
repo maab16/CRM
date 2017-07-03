@@ -9,60 +9,77 @@ use Blab\Database\Exception as Exception;
 class Query extends Core
 {
     /**
-    * @readwrite
-    */
+     * @var PDO
+     * @readwrite
+     */
     protected $_connector;
     
     /**
-    * @read
-    */
+     * @var string
+     * @read
+     */
     protected $_table;
     
     /**
-    * @read
-    */
-    protected $_fields;
-    
-    /**
-    * @read
-    */
+     * @var int
+     * @read
+     */
     protected $_limit;
     
     /**
-    * @read
-    */
+     * @var int
+     * @read
+     */
     protected $_offset;
     
     /**
-    * @read
-    */
+     * @var string
+     * @read
+     */
     protected $_order;
     
     /**
-    * @read
-    */
+     * @var string
+     * @read
+     */
     protected $_direction;
     
     /**
-    * @read
-    */
-    protected $_join = array();
+     * @var array
+     * @read
+     */
+    protected $_join = [];
+
+    /**
+     * @var array
+     * @read
+     */
+    protected $_fields = [];
     
     /**
-    * @read
-    */
-    protected $_where;
+     * @var array
+     * @read
+     */
+    protected $_where = [];
 
     /**
-    * @read
-    */
+     * @var array
+     * @read
+     */
 
-    protected $_bindValues = array();
+    protected $_bindValues = [];
     
     protected function _getExceptionForImplementation($method)
     {
         return new \Exception("{$method} method not implemented");
     }
+
+    /**
+     * Sanitize Input Data
+     *
+     * @param  string    $value
+     * @return string
+     */
                 
     protected function _quote($value)
     {
@@ -97,9 +114,21 @@ class Query extends Core
         
         return $this->connector->escape($value);
     }
+
+    /**
+     * Prepare SQL Query for SELECT Statement
+     *
+     * @return string
+     */
     
     protected function _prepareSelect()
     {
+        if (empty($this->_table))
+        {
+            
+            throw new Exception\Argument("Table Name Invalid ");
+        }
+
         $fields = array();
         $where = $order = $limit = $join = "";
         // %s is formate symbole those are used by sprintf()
@@ -145,64 +174,86 @@ class Query extends Core
         
        return sprintf($template, $fields, $this->_table, $join, $where, $order, $limit);
     }
+
+    /**
+     * Prepare SQL Query for SELECT Statement
+     *
+     * @param  array    $data
+     * @return string
+     */
     
     protected function _prepareInsert($data)
     {
+        if(!is_array($data) && !empty($data))
+        {
+            throw new Exception\Argument("Invalid argument . Argument must be an array");
+        }
+
+        if (empty($this->_table)) 
+        {
+            
+            throw new Exception\Argument("Table Name Invalid ");
+        }
+
         $template = "INSERT INTO `%s` (%s) VALUES (%s)";
         
-        if ($totalElement = count($data)) {
-                
-                $fields = "";
-                $values = "";
-                $i = 1;
-                foreach ($data as $field => $value) {
-                    
-                    $fields .= "`{$field}`";
-                    $values .= "?";
-                    $this->_bindValues[] = $value;
+        $fields = $values = [];
+        foreach ($data as $field => $value) 
+        {
+            
+            $fields[]= "`{$field}`";
+            $values[]= "?";
+            $this->_bindValues[] = $value;
+        }
 
-                    if ($i < $totalElement) {
-                        
-                        $fields .= ",";
-                        $values .= ",";
-                    }
-
-                    $i++;
-                }
-            }
+        $fields = implode(" , ", $fields);
+        $values = implode(" , ", $values);
 
        return sprintf($template, $this->_table, $fields, $values);
     }
+
+    /**
+     * Prepare SQL Query for UPDATE Statement
+     *
+     * @param  array    $data
+     * @return string
+     */
     
     protected function _prepareUpdate($data)
     {
-        $fields = "";
-        $values = array();
+        if(!is_array($data) || empty($data))
+        {
+
+            throw new Exception\Argument("Invalid argument . Argument must be an array");
+        }
+
+        if (empty($this->_table)) 
+        {
+            
+            throw new Exception\Argument("Table Name Invalid ");
+        }
+
+        $fields = $values = [];
         $where = $limit = "";
+
         $template = "UPDATE %s SET %s %s %s";
-        
-        $i = 1;
 
         foreach ($data as $field => $value)
         {
-            $fields .= "{$field} = ?";
+            $fields[]= "{$field} = ?";
             $values[] = $value;
-
-            if ($i < count($data)) {
-                
-                $fields .= ",";
-            }
-
-            $i++;
         }
 
+        $fields = implode(" , ", $fields);
+
         // Push $values into _bindValues array first
-        if (!empty($values)) {
+        if (!empty($values)) 
+        {
 
             $i = count($values);
 
-            while ($i) {
-                
+            while ($i) 
+            {
                 array_unshift($this->_bindValues,$values[$i-1]);
                 $i--;
             }
@@ -222,6 +273,12 @@ class Query extends Core
 
         return sprintf($template, $this->_table, $fields, $where, $limit);
     }
+
+    /**
+     * Prepare SQL Query for DELETE Statement
+     *
+     * @return string
+     */
     
     protected function _prepareDelete()
     {
@@ -248,25 +305,46 @@ class Query extends Core
         return sprintf($template, $table, $where, $limit);
     }
 
+    /**
+     * Check given array associate or not
+     *
+     * @param  array    $arr
+     * @return bool
+     */
+
     public function isAssoc(array $arr){
 
         if (array() === $arr) return false;
         return (array_keys($arr) !== range(0, count($arr) - 1)) ? true : false;
     }
 
+    /**
+     * Insert data into database
+     *
+     * @param  array    $data
+     * @return int
+     */
+
     public function insert($data){
 
         $sql = $this->_prepareInsert($data);
 
-        $result = $this->_connector->execute($sql,$this->_bindValues);
+        $result = $this->_connector->execute($sql,$this->_bindValues); 
         
         if ($result === false)
         {
             throw new Exception\Sql();
         }
 
-        return $result;
+        return $result->getLastInsertId();
     }
+
+    /**
+     * Update data
+     *
+     * @param  array    $data
+     * @return int
+     */
 
     public function update($data){
 
@@ -281,6 +359,12 @@ class Query extends Core
 
         return $result->getAffectedRows();
     }
+
+    /**
+     * Delete data from database
+     *
+     * @return int
+     */
     
     public function delete()
     {
@@ -292,33 +376,47 @@ class Query extends Core
             throw new Exception\Sql();
         }
         
-        return $this->_connector->getAffectedRows();
+        return $result->getAffectedRows();
     }
+
+    /**
+     * @param  string   $table
+     * @param  array    $fields
+     * @return object  $this
+     */
     
-    public function from($table, $fields = array())
+    public function from($table, $fields = [])
     {
-        $this->_fields = array();
         if (empty($table))
         {
             throw new Exception\Argument("Invalid argument");
         }
         
+        $this->_fields = [];
         $this->_table = $table;
         
         if (!empty($fields) && $this->isAssoc($fields))
         {
+            foreach ($fields as $field => $value) 
+            {
 
-            $i = 1;
-            foreach ($fields as $field => $value) {
+                if (is_string($field)) 
+                {
+                    $this->_fields[] = "{$field} AS ?";
 
-               $this->_fields[] = "{$field} AS ?";
-
-                $this->_bindValues[] = $value;   
+                    $this->_bindValues[] = $value; 
+                }
+                else
+                {
+                    $this->_fields[] = "{$value}";
+                }
+  
             }        
         }
         else
         {
-            foreach ($fields as $field) {
+            foreach ($fields as $field) 
+            {
 
                $this->_fields[] = "{$field}"; 
             }
@@ -327,7 +425,13 @@ class Query extends Core
         return $this;
     }
 
-    public function into($table, $fields = array())
+    /**
+     * @param  string   $table
+     * @param  array    $fields
+     * @return object  $this
+     */
+
+    public function into($table, $fields = [])
     {
         if (empty($table))
         {
@@ -338,20 +442,36 @@ class Query extends Core
         
         if (!empty($fields))
         {
+            foreach ($fields as $field => $value) 
+            {
 
-            $i = 1;
-            foreach ($fields as $field => $value) {
+               if (is_string($field)) 
+                {
+                    $this->_fields[] = "{$field} AS ?";
 
-               $this->_fields[] = "{$field} AS ?";
-
-                $this->_bindValues[] = $value;   
+                    $this->_bindValues[] = $value; 
+                }
+                else
+                {
+                    $this->_fields[] = "{$value}";
+                }  
             }        
         }
         
         return $this;
     }
+
+    /**
+     * Prepare Join Query
+     *
+     * @param  string     $type
+     * @param  string   $join
+     * @param  string   $on
+     * @param  array    $fields
+     * @return object  $this
+     */
     
-    public function join($type="INNER",$join, $on, $fields = array())
+    public function join($type="INNER",$join, $on, $fields = [])
     {
         if (empty($join))
         {
@@ -363,11 +483,12 @@ class Query extends Core
             throw new Exception\Argument("Invalid argument");
         }
 
-        if (!empty($fields)) {
+        if (!empty($fields)) 
+        {
             
-            foreach ($fields as $field => $value) {
-
-               $this->_fields[] = "{$field} AS ?";
+            foreach ($fields as $field => $value) 
+            {
+                $this->_fields[] = "{$field} AS ?";
 
                 $this->_bindValues[] = $value;
                     
@@ -378,6 +499,14 @@ class Query extends Core
         
         return $this;
     }
+
+    /**
+     * Prepare LIMIT for SQL
+     *
+     * @param  int   $limit
+     * @param  int    $page
+     * @return object  $this
+     */
     
     public function limit($limit, $page = 1)
     {
@@ -391,16 +520,23 @@ class Query extends Core
         
         return $this;
     }
+
+    /**
+     * Prepare Order for SQL
+     *
+     * @param  array    $order
+     * @return object  $this
+     */
     
-    public function order($order=array())
+    public function order($order=[])
     {
         $orderBy = "";
         $orderDirection = "";
 
         if (!empty($order))
         {
-            foreach ($order as $key => $value) {
-            
+            foreach ($order as $key => $value) 
+            {
                 $orderBy = $key;
                 $orderDirection = $value;
             }
@@ -411,9 +547,23 @@ class Query extends Core
         
         return $this;
     }
+
+    /**
+     * WHERE Clause
+     *
+     * @param  array   $where
+     * @param  string  $oparator
+     * @param  string  $joint
+     * @return object  $this
+     */
     
      public function where($where=array(),$oparator = "",$joint="AND")
     {
+
+        if(!is_array($where)){
+
+            throw new Exception\Argument("Invalid argument . First argument must be an array");
+        }
 
         if (empty($where)) {
             
@@ -448,8 +598,21 @@ class Query extends Core
         return $this;
     }
 
+    /**
+     * WHERE Clause with AND
+     *
+     * @param  array   $where
+     * @param  string  $oparator
+     * @return object  $this
+     */
+
     public function andWhere($where=array(),$oparator="")
     {
+        if(!is_array($where)){
+
+            throw new Exception\Argument("Invalid argument . First argument must be an array");
+        }
+
         if (empty($where)) {
             
             $this->_where = array();
@@ -483,13 +646,26 @@ class Query extends Core
         return $this;
     }
 
-    public function orWhere($where=array(),$oparator="")
+    /**
+     * WHERE Clause with OR
+     *
+     * @param  array   $where
+     * @param  string  $oparator
+     * @return object  $this
+     */
+
+    public function orWhere(array $where=array(),$oparator="")
     {
+        if(!is_array($where)){
+
+            throw new Exception\Argument("Invalid argument . First argument must be an array");
+        }
         if (empty($where)) {
             
             $this->_where = array();
             return $this;
         }
+
 
         if (!empty($oparator)) {
             

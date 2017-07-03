@@ -9,15 +9,16 @@ class Blab_Controller extends Core
 {
 
 	/**
-	* @readwrite
-	*/
-
-	protected $_parameters;
-
+	 * @var 
+	 * @readwrite
+	 */
 	protected $data;
 	protected $model;
 	protected $params;
 
+	/**
+	 * @return object
+	 */
 	public function getData(){
 
 		return (object)$this->data;
@@ -25,17 +26,28 @@ class Blab_Controller extends Core
 		//return $this->data;
 	}
 
+	/**
+	 * @return object
+	 */
 	public function getModel(){
 
 		return $this->model;
 	}
-
+	
+	/**
+	 * @return string/numeric
+	 */
 	public function getParams(){
 
 		return $this->params;
 	}
 
-	public function __construct($data = array()){
+	/**
+	 * @param array $data
+	 * @return void
+	 */
+
+	public function __construct($data = []){
 
 		$this->data = $data;
 		$this->params = Bootstrap::getRouter()->getParams();

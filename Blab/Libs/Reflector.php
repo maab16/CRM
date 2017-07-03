@@ -2,10 +2,10 @@
 
 namespace Blab\Libs;
 
-use Blab\Reflection\ClassInfo as ClassInfo;
-use Blab\Reflection\ClassPropertyInfo as ClassPropertyInfo;
-use Blab\Reflection\ClassMethodInfo as ClassMethodInfo;
-use Blab\Libs\StringMethods as StringMethods;
+use Blab\Reflection\ClassInfo;
+use Blab\Reflection\ClassPropertyInfo;
+use Blab\Reflection\ClassMethodInfo;
+use Blab\Libs\StringMethods;
 
 class Reflector
 {
@@ -100,8 +100,6 @@ class Reflector
                 }
             }
         }
-
-        //var_dump($meta);
             
         return $meta;
 	}

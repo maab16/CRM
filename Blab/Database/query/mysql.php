@@ -4,12 +4,21 @@ namespace Blab\Database\Query;
 
 use Blab\Database;
 use Blab\Database\Exception;
-use Blab\Libs\ArrayMethods as ArrayMethods;
+use Blab\Libs\ArrayMethods;
 
 class Mysql extends Database\Query
 {
+    /**
+     * @var object
+     */
 
     protected $_results;
+
+    /**
+     * Get All results
+     *
+     * @return object 
+     */
 
     public function results(){
 
@@ -35,10 +44,22 @@ class Mysql extends Database\Query
         
     }
 
+    /**
+     * Get Single Result
+     *
+     * @return object
+     */
+
     public function firstResult(){
 
         return $this->results()[0];
     }
+
+    /**
+     * Check data exists
+     *
+     * @return bool
+     */
 
     public function exists($table,$where=array()){
 
@@ -65,6 +86,11 @@ class Mysql extends Database\Query
         return false;
 
     }
+    /**
+     * Count table records from database
+     *
+     * @return int
+     */
 
     public function countRows(){
 

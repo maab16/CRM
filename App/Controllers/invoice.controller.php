@@ -33,7 +33,7 @@ class InvoiceController extends Blab_Controller
 		}
 
 		$capture = new Capture([
-				// 'envPath'=>'E:\xampp\htdocs\devcodeskill\Blab\Invoice\bin', // Set Global Path for phantomjs.exe
+				'envPath'=>'H:\xampp\htdocs\PhantomJS\bin', // Set Global Path for phantomjs.exe
 				'viewPath'=>ROOT.DS.'App'.DS.'views'.DS.'Invoice'.DS.'views',
 				'tempDir'=>ROOT.DS.'App'.DS.'views'.DS.'Invoice',
 				'captureJS'=>ROOT.DS.'App'.DS.'views'.DS.'Invoice'.DS.'capture.js',// Capture javascript file path

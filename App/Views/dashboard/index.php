@@ -200,7 +200,6 @@
         
         <?php endif;?>
         <?php
-
         ?>
           <div class="invoice">
 

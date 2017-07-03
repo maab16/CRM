@@ -7,71 +7,95 @@ use Blab\Database\Exception;
 
 class Mysql extends Database\Connector
 {
+	/**
+	 * @var PDO
+	 */
 	protected $_service;
+
+	/**
+	 * @var object
+	 */
 
 	protected $_query;
 
+	/**
+	 * @var int
+	 */
+
 	protected $_lastInsertId;
 
-	protected $_error;
 	/**
-	 *@readwrite
+	 * @var object
+	 * @readwrite
 	 */
 	protected $_results;
 	/**
-	 *@readwrite
+	 * @var int
+	 * @readwrite
 	 */
 	protected $_count;
 
 	/**
-	 *@readwrite
+	 * @var string
+	 * @readwrite
 	 */
 
 	protected $_host;
 
 	/**
-	 *@readwrite
+	 * @var string
+	 * @readwrite
 	 */
 
 	protected $_username;
 
 	/**
-	 *@readwrite
+	 * @var string
+	 * @readwrite
 	 */
 
 	protected $_password;
 
 	/**
-	 *@readwrite
+	 * @var string
+	 * @readwrite
 	 */
 
 	protected $_dbName;
 
 	/**
-	 *@readwrite
+	 * @var string
+	 * @readwrite
 	 */
 
 	protected $_port= "3306";
 
 	/**
-	 *@readwrite
+	 * @var string
+	 * @readwrite
 	 */
 
 	protected $_charset = "utf8";
 
 	/**
-	 *@readwrite
+	 * @var string 
+	 * @readwrite
 	 */
 
 	protected $_engine = "InoDB";
 
 	/**
-	 *@readwrite
+	 * @var bool
+	 * @readwrite
 	 */
 
 	protected $_isConnected = false;
 
-	// checks if connected to the database
+	/**
+     * Checks if connected to the database
+     *
+     * @return bool
+     */
 	protected function _isValidService(){
 
 		$isInstance = $this->_service instanceof \PDO;
@@ -84,7 +108,14 @@ class Mysql extends Database\Connector
 		return false;
 	}
 
-	protected function _prepareSql($sql,$params = array()){
+	/**
+     * Prepare SQL Query
+     *
+     * @param  string    $sql
+     * @param  array    $params
+     * @return PDO
+     */
+	protected function _prepareSql($sql,$params = []){
 
 		if ($_query = $this->_service->prepare($sql)) {
 				
@@ -103,7 +134,11 @@ class Mysql extends Database\Connector
 		}
 	}
 
-	// connects to the database
+	/**
+     * Connect database with PDO
+     *
+     * @return object
+     */
 	public function connect(){
 
 		if (!$this->_isValidService()) {
@@ -125,7 +160,11 @@ class Mysql extends Database\Connector
 		return $this;
 	}
 
-	// disconnects from the database
+	/**
+     * Disconnect Database Connection
+     *
+     * @return object
+     */
 	public function close(){
 
 		if ($this->_isValidService()) {
@@ -137,8 +176,146 @@ class Mysql extends Database\Connector
 		return $this;
 	}
 
+	/**
+     * returns a corresponding query instance
+     *
+     * @return PDO
+     */
+	public function query(){
+
+		return new Database\Query\Mysql(array(
+
+				"connector"=>$this
+			));
+	}
+
+	/**
+     * Executes the provided SQL statement
+     *
+     * @param  string 	$sql
+     * @param  array    $params
+     * @return object
+     */
+	public function execute($sql,$params = []){
+
+		if (!$this->_isValidService()) {
+			
+			throw new Exception\Service("Unable to connect service");
+		}
+
+			if ($this->_query = $this->_service->prepare($sql)) {
+				
+				$x=1;
+				if (!empty($params)) {
+					foreach ($params as $param) {
+					
+						$this->_query->bindValue($x,$param);
+
+						$x++;
+					}
+				}
+
+				if ($this->_query->execute()) {
+
+					$this->_lastInsertId = $this->_service->lastInsertId();
+
+					$this->_results = $this->_query->fetchAll(\PDO::FETCH_OBJ);
+
+					$this->_count = $this->_query->rowCount();
+			
+					return $this;
+
+				}else{
+
+					return false;
+				}
+			}
+
+			return false;
+	}
+
+	/**
+     * Escapes the provided value to make it safe for queries
+     *
+     * @param  string    $value
+     * @return string
+     */
+    public function escape($value)
+    {
+        if (!$this->_isValidService())
+        {
+            throw new Exception\Service("Not connected to a valid service");
+        }
+        
+        return $this->_service->quote($value);
+    }
+
+    /**
+     * Returns the ID of the last row to be inserted
+     *
+     * @return int
+     */
+    public function getLastInsertId()
+    {
+        if (!$this->_isValidService())
+        {
+            throw new Exception\Service("Not connected to a valid service");
+        }
+        
+        return $this->_lastInsertId;
+    }
+
+    /**
+     * Returns the number of rows affected
+     * by the last SQL query executed
+     *
+     * @return int
+     */
+    public function getAffectedRows()
+    {
+        if (!$this->_isValidService())
+        {
+            throw new Exception\Service("Not connected to a valid service");
+        }
+        
+        return $this->_count;
+    }
+
+    /**
+     * Returns the last error of occur
+     *
+     * @return int
+     */
+    public function getLastError()
+    {
+        if (!$this->_isValidService())
+        {
+            throw new Exception\Service("Not connected to a valid service");
+        }
+        
+        return $this->_service->errorInfo();
+    }
+
+    /**
+     * Get All Data
+     *
+     * @return object
+     */
+	public function getResults(){
+
+		return $this->_results;
+	}
+
+    /**
+     * Create Table
+     *
+     * @param  object    $model
+     * @return object
+     */
+
 	public function createTable($model)
     {
+
         $lines = array();
         $indices = array();
         $columns = $model->getColumns();
@@ -181,151 +358,49 @@ class Mysql extends Database\Connector
                 } 
                 case "integer":
                 {
-                        $lines[] = "`{$name}` int(11) DEFAULT NULL";
-                        break;
-                    }
-                    case "decimal":
-                    {
-                        $lines[] = "`{$name}` float DEFAULT NULL";
-                        break;
-                    }
-                    case "boolean":
-                    {
-                        $lines[] = "`{$name}` tinyint(4) DEFAULT NULL";
-                        break;
-                    }
-                    case "datetime":
-                    {
-                        $lines[] = "`{$name}` datetime DEFAULT NULL";
-                        break;
-                    }
+                    $lines[] = "`{$name}` int(11) DEFAULT NULL";
+                    break;
+                }
+                case "decimal":
+                {
+                    $lines[] = "`{$name}` float DEFAULT NULL";
+                    break;
+                }
+                case "boolean":
+                {
+                    $lines[] = "`{$name}` tinyint(4) DEFAULT NULL";
+                    break;
+                }
+                case "datetime":
+                {
+                    $lines[] = "`{$name}` datetime DEFAULT NULL";
+                    break;
                 }
             }
-            
-            $table = $model->getTable();
-            $sql = sprintf(
-                $template,
-                $table,
-                join(",\n", $lines),
-                join(",\n", $indices)
-            );
-            
-            $result = $this->_service->exec("DROP TABLE IF EXISTS {$table};");
-            if ($result === false)
-            {
-                $error = $this->lastError;
-                throw new Exception\Sql("There was an error in the query: {$error}");
-            }
-      	
-            $result = $this->_service->exec($sql);
-            if ($result === false)
-            {
-                //$error = $this->lastError;
-                throw new Exception\Sql("There was an error in the query: ");
-            }
-            
-            return $this;
         }
-
-	// returns a corresponding query instance
-	public function query(){
-
-		return new Database\Query\Mysql(array(
-
-				"connector"=>$this
-			));
-	}
-
-	// executes the provided SQL statement
-
-	public function execute($sql,$params = array()){
-
-		if (!$this->_isValidService()) {
-			
-			throw new Exception\Service("Unable to connect service");
-		}
-
-			if ($this->_query = $this->_service->prepare($sql)) {
-				
-				$x=1;
-				if (!empty($params)) {
-					foreach ($params as $param) {
-					
-						$this->_query->bindValue($x,$param);
-
-						$x++;
-					}
-				}
-
-				if ($this->_query->execute()) {
-
-					$this->_lastInsertId = $this->_service->lastInsertId();
-
-					$this->_results = $this->_query->fetchAll(\PDO::FETCH_OBJ);
-
-					$this->_count = $this->_query->rowCount();
-			
-					return $this;
-
-				}else{
-
-					return false;
-				}
-			}
-
-			return false;
-	}
-
-	public function getResults(){
-
-		return $this->_results;
-	}
-
-	// escapes the provided value to make it safe for queries
-
-	// escapes the provided value to make it safe for queries
-        public function escape($value)
-        {
-            if (!$this->_isValidService())
-            {
-                throw new Exception\Service("Not connected to a valid service");
-            }
             
-            return $this->_service->quote($value);
+        $table = $model->getTable();
+        $sql = sprintf(
+            $template,
+            $table,
+            join(",\n", $lines),
+            join(",\n", $indices)
+        );
+        
+        $result = $this->_service->exec("DROP TABLE IF EXISTS {$table};");
+        if ($result === false)
+        {
+            $error = $this->lastError;
+            throw new Exception\Sql("There was an error in the query: {$error}");
+        }
+  	
+        $result = $this->_service->exec($sql);
+        if ($result === false)
+        {
+            //$error = $this->lastError;
+            throw new Exception\Sql("There was an error in the query: ");
         }
         
-        // returns the ID of the last row
-        // to be inserted
-        public function getLastInsertId()
-        {
-            if (!$this->_isValidService())
-            {
-                throw new Exception\Service("Not connected to a valid service");
-            }
-            
-            return $this->_lastInsertId;
-        }
-        
-        // returns the number of rows affected
-        // by the last SQL query executed
-        public function getAffectedRows()
-        {
-            if (!$this->_isValidService())
-            {
-                throw new Exception\Service("Not connected to a valid service");
-            }
-            
-            return $this->_count;
-        }
-        
-        // returns the last error of occur
-        public function getLastError()
-        {
-            if (!$this->_isValidService())
-            {
-                throw new Exception\Service("Not connected to a valid service");
-            }
-            
-            return $this->_service->errorInfo();
-        }
+        return $this;
+    }
 }

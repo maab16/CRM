@@ -7,9 +7,21 @@ use Blab\Libs\Configuration;
 
 class Blab_Model
 {
+	/**
+     * @var PDO
+     */
 	protected $_db=null;
+
+	/**
+     * @var PDO\Instance
+     */
 	private static $_instance=null;
 
+	/**
+     * Initialize Database
+     *
+     * @return object 	PDO
+     */
 	public function __construct(){
 
 		$configuration = new Configuration(array(
@@ -18,7 +30,7 @@ class Blab_Model
 		$path = ROOT.DS.'App'.DS.'Config'.DS.'database';
 		$configuration = $configuration->initialize();
 		$parsed = $configuration->parse($path);
-			//print_r($parsed);
+
 		$dbType = $parsed->default->database->type;
 		$hostName = $parsed->default->database->host;
 		$username = $parsed->default->database->username;
@@ -39,23 +51,13 @@ class Blab_Model
 			)
 		));
 		$this->_db = $database->initialize()->connect();
-/*
-		// Get All Data
-
-		$all = $this->_db->query()
-			->from("users")
-			->where(array(
-				"last"=>"Basir"
-			))
-			->order("first", "desc")
-			->limit(100)
-			->all();
-
-		$print = print_r($all, true);
-		echo "all = >{$print}";
-*/
 	}
 
+	/**
+     * Get Database Instance
+     *
+     * @return object 	PDO
+     */
 	public static function getDBInstance(){
 
 		if (!isset(self::$_instance)) {

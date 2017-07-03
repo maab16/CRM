@@ -42,7 +42,8 @@ abstract class RouteAbstract
 
         $methodName = strtolower($name);
 
-        $methodType = (strpos($methodName,"get")!==false && strpos($methodName,"get")==0) ? "get" : ((strpos($methodName,"set")!==false && strpos($methodName,"set")==0) ? "set" : null);
+        $methodType = (strpos($methodName,"get")!==false && strpos($methodName,"get")==0) ? "get" 
+        			  : ((strpos($methodName,"set")!==false && strpos($methodName,"set")==0) ? "set" : null);
         switch ($methodType) {
         	case 'get':
         		// Match Pattern and return Property Name from Method Name
@@ -124,4 +125,6 @@ abstract class RouteAbstract
         		break;
         }
 	}
+
+	abstract public function doSomeThing();
 }
