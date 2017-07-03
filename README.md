@@ -22,3 +22,8 @@ copy the below code and pase it into " httpd-vhosts.conf "
 ```
 
 ## DocumentRoot \path must be your document root with sub folder
+
+
+# Database Settings
+
+got to ``` App\Config\database.ini ``` 
