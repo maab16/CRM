@@ -1,0 +1,1 @@
+Add Phantomjs.exe inside bin folder
